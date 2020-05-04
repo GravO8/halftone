@@ -5,6 +5,7 @@ import argparse
 import re
 import cv2
 import numpy as np
+from math import ceil
 import os
 import sys
             
@@ -23,18 +24,14 @@ def halftone(img_name, side = 40, jump = 5, bg_color = (255,255,255), fg_color =
         alpha: Float in the range ]0,2[ that determines how big the circles can
         be. When alpha has the default value of 1, the maximum radius is side/2
     '''
-    if( not os.path.exists(img_name) ):
-        print("can't find image", img_name)
-        return
-    print("Halftone for image:", img_name)
+    assert os.path.exists(img_name), "can't find image {}".format(img_name)
+    print("Halftone for image", img_name)
     bg_color      = bg_color[::-1] 
     fg_color      = fg_color[::-1] 
     img 		  = cv2.imread(img_name, cv2.IMREAD_GRAYSCALE)
     height, width = img.shape
     
-    scale = side // jump
-    height_output, width_output = output_img_dimensions(height, width, scale, side)
-        
+    height_output, width_output = side*ceil(height/jump), side*ceil(width/jump)
     canvas 	      = np.zeros((height_output,width_output,3), np.uint8)
     canvas[:]     = bg_color
     output_square = np.zeros((side, side, 3), np.uint8)
@@ -45,28 +42,13 @@ def halftone(img_name, side = 40, jump = 5, bg_color = (255,255,255), fg_color =
             output_square[:] = bg_color
             intensity        = 1 - square_avg_value(img[y:y+jump, x:x+jump])/255
             radius           = int(alpha*intensity*side/2)
-            cv2.circle(output_square, (side//2, side//2), radius, fg_color, -1)
+            cv2.circle(output_square, (side//2,side//2), radius, fg_color, -1)
             canvas[y_output:y_output+side, x_output:x_output+side] = output_square
             x_output += side
         y_output += side
         x_output = 0
     cv2.imwrite("out-"+img_name, canvas)
     print("done!")
-    
-    
-def output_img_dimensions(height, width, scale, side):
-    '''
-    Computes the dimensions of the output image and makes sure they are a 
-    multiple of side
-    Returns the output image width and height 
-    '''
-    height_output = height * scale
-    if(height_output % side != 0):
-        height_output += side - height_output % side
-    width_output = width*scale 
-    if(width_output % side != 0):
-        width_output += side - width_output % side
-    return height_output, width_output
     
     
 def square_avg_value(square):
@@ -121,10 +103,10 @@ def get_args():
     "of 1, the maximum radius is side/2", type = float, default = 1)
     args = parser.parse_args()
     return args
-        
+
+
 if __name__ == "__main__":
     args = get_args()
-    print(args)
     halftone(args.file, 
             side = args.side, 
             jump = args.jump,

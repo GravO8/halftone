@@ -1,4 +1,5 @@
 *.jpg
+*.png
 *.DS_Store
 __pycache__
 what.py
