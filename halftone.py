@@ -1,39 +1,13 @@
 #pip3 install opencv-python
+#python3 -m pydoc halftone
 import cv2
 import numpy as np
 import os, sys
-
-def output_img_dimensions(height, width, scale, side):
-    height_output  = height * scale
-    if(height_output % side != 0):
-        height_output += side - height_output % side
-
-    width_output   = width*scale 
-    if(width_output % side != 0):
-        width_output  += side - width_output % side
-    
-    return height_output, width_output
-    
-    
-def square_avg_value(square):
-    sum = 0
-    n = 0
-    for row in square:
-        for pixel in row:
-            sum += pixel
-            n += 1
-    return sum/n
-    
-    
-def remove_tmp():
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    for file in os.listdir(current_dir):
-    	if( file.endswith(".tmp") ):
-    		os.remove(file)
             
 
 def halftone(img_name, side = 40, jump = 2, bg_color = (255,255,255), circle_color = (0,0,0), alpha = 1):
     '''
+    Generates an halftone image from the image specified in img_name
     Arguments:
         img_name: String with the imagem name (must include the image extension)
         side: Length (in pixels) of the side of each square that composes the 
@@ -74,7 +48,38 @@ def halftone(img_name, side = 40, jump = 2, bg_color = (255,255,255), circle_col
         x_output = 0
     cv2.imwrite("out-"+img_name, canvas)
     print("done!")
-    remove_tmp()
+    
+    
+def output_img_dimensions(height, width, scale, side):
+    '''
+    Computes the dimensions of the output image and makes sure they are a 
+    multiple of side
+    Returns the output image width and height 
+    '''
+    height_output = height * scale
+    if(height_output % side != 0):
+        height_output += side - height_output % side
+    width_output = width*scale 
+    if(width_output % side != 0):
+        width_output += side - width_output % side
+    return height_output, width_output
+    
+    
+def square_avg_value(square):
+    '''
+    Calculates the average grayscale value of the pixels in a square of the 
+    original image 
+    Argument:
+        square: List of N lists, each with N integers whose value is between 0 
+        and 255
+    '''
+    sum = 0
+    n = 0
+    for row in square:
+        for pixel in row:
+            sum += pixel
+            n += 1
+    return sum/n
     
         
 if __name__ == "__main__":
