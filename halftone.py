@@ -10,26 +10,37 @@ import os
 import sys
             
 
-def halftone(img_name, side = 40, jump = 5, bg_color = (255,255,255), fg_color = (0,0,0), alpha = 1):
+def halftone(img_name, side = 20, jump = None, bg_color = (255,255,255), fg_color = (0,0,0), alpha = 1.4):
     '''
     Generates an halftone image from the image specified in img_name
     Arguments:
-        img_name: String with the imagem name (must include the image extension)
-        side: Length (in pixels) of the side of each square that composes the 
-        output image
-        jump: Length (in pixels) of the side of each square the program will 
-        scan from original image
-        bg_color: Background color of the output image (default is white)
-        fg_color: Color of the circles of the output image (default is black)
-        alpha: Float in the range ]0,2[ that determines how big the circles can
-        be. When alpha has the default value of 1, the maximum radius is side/2
+        img_name (required)- String with the image name (must include the image
+        extension)
+        side (optional)- Length (in pixels) of the side of each square that 
+        composes the output image (default is 20)
+        jump (optional)- Length (in pixels) of the side of each square the 
+        program will scan from original image (default is 0.7% of the minimum 
+        between the width and height)
+        bg_color (optional)- Background color of the output image (default is 
+        white)
+        fg_color (optional)- Color of the circles of the output image (default 
+        is black)
+        alpha (optional)- Float (greater than 0) that determines how big the 
+        circles can be. When alpha is 1, the maximum radius is side/2 (default
+        is 1.4)
     '''
     assert os.path.exists(img_name), "can't find image {}".format(img_name)
+    assert side > 0, "side must be greater than 0"
+    assert alpha > 0, "alpha must be greater than 0"
     print("Halftone for image", img_name)
     bg_color      = bg_color[::-1] 
     fg_color      = fg_color[::-1] 
     img 		  = cv2.imread(img_name, cv2.IMREAD_GRAYSCALE)
     height, width = img.shape
+    if(jump == None):
+        jump = ceil(min(height,height)*0.007)
+    assert jump > 0, "jump must be greater than 0"
+    print("height: {}, width: {}, side: {}, jump: {}, bg_color: {}, fg_color: {}, alpha: {}".format(height, width, side, jump, bg_color, fg_color, alpha))
     
     height_output, width_output = side*ceil(height/jump), side*ceil(width/jump)
     canvas 	      = np.zeros((height_output,width_output,3), np.uint8)
@@ -89,20 +100,24 @@ def get_args():
             return arg
         raise argparse.ArgumentTypeError("invalid rgb value")
     parser = argparse.ArgumentParser(description = "Generate halftone images")
-    parser.add_argument("file", help = "Image file name (with image extension)")
-    parser.add_argument("-s", "--side", help = "Length (in pixels) of the side"+
-    " of each square that composes the output image", type = int, default = 40)
-    parser.add_argument("-j", "--jump", help = "Length (in pixels) of the side"+
-    " of each square the program will scan from original image", type = int, default = 5)
-    parser.add_argument("-bg", "--bg_color", help = "Background color of the " +
-    "output image (default is white)", default = "(255,255,255)", type = rgb_color)
-    parser.add_argument("-fg", "--fg_color", help = "Color of the circles of " +
-    "the output image (default is black)", default = "(0,0,0)", type = rgb_color)
-    parser.add_argument("-a", "--alpha", help = "Float in the range ]0,2[ that"+
-    " determines how big the circles can be. When alpha has the default value "+
-    "of 1, the maximum radius is side/2", type = float, default = 1)
-    args = parser.parse_args()
-    return args
+    parser.add_argument("file", help = "(required)- String with the image name"+
+    " (must include the image extension")
+    parser.add_argument("-s", "--side", help = "(optional)- Length (in pixels)"+
+    " of the side of each square that composes the output image (default is 20)"
+    , type = int, default = 20)
+    parser.add_argument("-j", "--jump", help = "(optional)- Length (in pixels)"+
+    " of the side of each square the program will scan from original image (de"+
+    "fault is 0.7%% of the minimum between the width and height)", type = int)
+    parser.add_argument("-bg", "--bg_color", help = "(optional)- Background co"+
+    "lor of the output image (default is white)", default = "(255,255,255)", 
+    type = rgb_color)
+    parser.add_argument("-fg", "--fg_color", help = "(optional)- Color of the "+
+    "circles of the output image (default is black)", default = "(0,0,0)", type 
+    = rgb_color)
+    parser.add_argument("-a", "--alpha", help = "(optional)- Float (greater th"+
+    "an 0) that determines how big the circles can be. When alpha is 1, the ma"+
+    "ximum radius is side/2 (default is 1.4)", type = float, default = 1.4)
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
