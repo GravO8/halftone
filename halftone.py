@@ -1,13 +1,10 @@
 #pip3 install opencv-python
-#python3 -m pydoc halftone
-#python3 halftone.py -h
 import argparse
 import re
 import cv2
 import numpy as np
 from math import ceil
-import os
-import sys
+from os import path
             
 
 def halftone(img_name, side = 20, jump = None, bg_color = (255,255,255), fg_color = (0,0,0), alpha = 1.4):
@@ -16,35 +13,34 @@ def halftone(img_name, side = 20, jump = None, bg_color = (255,255,255), fg_colo
     Arguments:
         img_name (required)- String with the image name (must include the image
         extension)
-        side (optional)- Length (in pixels) of the side of each square that 
-        composes the output image (default is 20)
-        jump (optional)- Length (in pixels) of the side of each square the 
-        program will scan from original image (default is 0.7% of the minimum 
-        between the width and height)
-        bg_color (optional)- Background color of the output image (default is 
-        white)
-        fg_color (optional)- Color of the circles of the output image (default 
-        is black)
+        side (optional)- Integer witht the length (in pixels) of the side of 
+        each square that composes the output image (default is 20)
+        jump (optional)- Integer witht length (in pixels) of the side of each 
+        square the program will scan from original image (default is 0.7% of the
+        minimum between the width and height)
+        bg_color (optional)- Tuple with the rgb value of the background color of
+        the output image (default is white)
+        fg_color (optional)- Tuple with the rgb value of the color of the 
+        circles of the output image (default is black)
         alpha (optional)- Float (greater than 0) that determines how big the 
         circles can be. When alpha is 1, the maximum radius is side/2 (default
         is 1.4)
     '''
-    assert os.path.exists(img_name), "can't find image {}".format(img_name)
+    assert path.exists(img_name), "can't find image {}".format(img_name)
     assert side > 0, "side must be greater than 0"
     assert alpha > 0, "alpha must be greater than 0"
     print("Halftone for image", img_name)
-    bg_color      = bg_color[::-1] 
-    fg_color      = fg_color[::-1] 
     img 		  = cv2.imread(img_name, cv2.IMREAD_GRAYSCALE)
     height, width = img.shape
     if(jump == None):
         jump = ceil(min(height,height)*0.007)
     assert jump > 0, "jump must be greater than 0"
     print("height: {}, width: {}, side: {}, jump: {}, bg_color: {}, fg_color: {}, alpha: {}".format(height, width, side, jump, bg_color, fg_color, alpha))
+    bg_color = bg_color[::-1] 
+    fg_color = fg_color[::-1] 
     
     height_output, width_output = side*ceil(height/jump), side*ceil(width/jump)
     canvas 	      = np.zeros((height_output,width_output,3), np.uint8)
-    canvas[:]     = bg_color
     output_square = np.zeros((side, side, 3), np.uint8)
     
     x_output, y_output = 0, 0
@@ -93,6 +89,7 @@ def get_args():
     Reads and parses the arguments from the command line
     '''
     def rgb_color(arg, pat = re.compile("\([0-9]{1,3},[0-9]{1,3},[0-9]{1,3}\)")):
+        arg = arg.replace(" ","")
         if( pat.match(arg) and
             int(arg[1:-1].split(",")[0]) < 256 and
             int(arg[1:-1].split(",")[1]) < 256 and
