@@ -1,8 +1,8 @@
-# Halftone
+<h1 align="center">Halftone</h1>
 
 This is a very simple python program that uses [open cv](https://docs.opencv.org/master/index.html) to generate images using the [halftone technique](https://en.wikipedia.org/wiki/Halftone).
 
-## Command line usage
+# Command line usage
 
 Put the source image in the same directory as halftone.py and call it like so:
 
@@ -14,7 +14,7 @@ You can also learn about the [optional arguments](#optional-arguments), doing so
 
 
 
-## Calling from another module
+# Calling from another module
 
 ```python
 import halftone
@@ -26,9 +26,9 @@ Learn more about the methods' signature and behaviour with `python3 -m pydoc hal
 
 
 
-## Optional arguments
+# Optional arguments
 
-### Side
+## Side
 
 The generated image is composed of squares with dots in them. This optional argument specifies how big each of these squares can be. 
 
@@ -44,7 +44,7 @@ Values of `side` that are too large create big images that may take a while to g
 
 The default `side` value is 20 pixels because from my experience playing with this variable, 20 gives you a nice equilibrium between image size and image smoothness. 
 
-### Jump
+## Jump
 
 The generated image is created from an input image which is scanned left to right, top to bottom. Instead of scanning the image pixel by pixel, the image is scanned in blocks, i.e. squares that are `jump` pixels wide. Each of these blocks will be converted into a dot in the output image. 
 
@@ -56,7 +56,7 @@ The higher the value of `jump`, the lower the number of dots in the output image
 
 If you set `jump = 1`, you're forcing the program to create a dot for each pixel in the original image (!) which will take forever and generate huge output images.
 
-### Colors
+## Colors
 
 `bg_color` sets the background color of the output image.
 
@@ -72,7 +72,7 @@ If you are calling the program using the command line interface, you have to spe
 
 If you are calling the program from another module, this optional argument is a tuple, so you specify it like so: `halftone.halftone("woman.jpg", fg_color = (255,0,0))`.
 
-### Alpha
+## Alpha
 
 Each dot is drawn in a `side` pixels wide square. If `alpha = 1`, each dot's radius will never be greater than `side` (i.e. at most, the dots are inscribed in their squares). When the dots' size is limited like this, the output image can look a bit faded, as you can see from the images below. 
 
@@ -82,7 +82,10 @@ Each dot is drawn in a `side` pixels wide square. If `alpha = 1`, each dot's rad
 
 If you set `alpha = 0`, the output image will have no dots (their radius will all be 0).
 
-## Original image credits
+# Original image credits
 
 The photo I've been using is called **Woman in White Robe Smiling** and you can see the original version [here](https://www.pexels.com/photo/woman-in-white-robe-smiling-4156467/). Check out this photo's original photographer [here](https://www.pexels.com/@breston-kenya-477564).
 
+# License
+
+This program is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
