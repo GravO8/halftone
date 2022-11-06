@@ -2,6 +2,8 @@
 
 This is a very simple python program that uses [open cv](https://docs.opencv.org/master/index.html) to generate images using the [halftone technique](https://en.wikipedia.org/wiki/Halftone).
 
+(If you like this repo, you may also like [this one](https://github.com/GravO8/halftone-lines))
+
 # Command line usage
 
 Put the source image in the same directory as halftone.py and call it like so:
